@@ -2591,12 +2591,12 @@ GO
 
 -- Cuota IMSS Obrera
 CREATE OR ALTER FUNCTION dbo.fn_CuotaIMSS_Obrero (
-    @SBC DECIMAL(18,4), @EjercicioId INT, @Anio INT, @DiasPeriodo DECIMAL(5,2)
+    @SBC DECIMAL(18,4), @EjercicioId INT, @Fecha DATE, @DiasPeriodo DECIMAL(5,2)
 )
 RETURNS DECIMAL(18,4)
 AS
 BEGIN
-    DECLARE @UMADia DECIMAL(12,4) = dbo.fn_ObtenerUMADiaria(@Anio);
+    DECLARE @UMADia DECIMAL(12,4) = dbo.fn_ObtenerUMADiariaFecha(@Fecha);
     DECLARE @SBCPer DECIMAL(18,4) = @SBC * @DiasPeriodo;
     DECLARE @Excedente DECIMAL(18,4) = CASE WHEN @SBC > 3.0*@UMADia
                                             THEN (@SBC - 3.0*@UMADia)*@DiasPeriodo ELSE 0 END;
@@ -2614,12 +2614,12 @@ GO
 
 -- Cuota IMSS Patronal
 CREATE OR ALTER FUNCTION dbo.fn_CuotaIMSS_Patron (
-    @SBC DECIMAL(18,4), @EjercicioId INT, @Anio INT, @DiasPeriodo DECIMAL(5,2)
+    @SBC DECIMAL(18,4), @EjercicioId INT, @Fecha DATE, @DiasPeriodo DECIMAL(5,2)
 )
 RETURNS DECIMAL(18,4)
 AS
 BEGIN
-    DECLARE @UMADia DECIMAL(12,4) = dbo.fn_ObtenerUMADiaria(@Anio);
+    DECLARE @UMADia DECIMAL(12,4) = dbo.fn_ObtenerUMADiariaFecha(@Fecha);
     DECLARE @SBCPer DECIMAL(18,4) = @SBC * @DiasPeriodo;
     DECLARE @UMABase DECIMAL(18,4) = @UMADia * @DiasPeriodo;
     DECLARE @Excedente DECIMAL(18,4) = CASE WHEN @SBC > 3.0*@UMADia
@@ -3447,7 +3447,7 @@ BEGIN
                                THEN ROUND((@SubMes - @ISRMes) / @FactorMes,2) ELSE 0 END;
             SET @ISRPer    = ROUND(@ISRNeto / @FactorMes, 2);
 
-            SET @CuoObr = dbo.fn_CuotaIMSS_Obrero(@SBC, @EjercicioId, @Anio, @DiasTrab);
+            SET @CuoObr = dbo.fn_CuotaIMSS_Obrero(@SBC, @EjercicioId, @FechaFin, @DiasTrab);
 
             -- Descuento INFONAVIT (las variables se reinician: dentro de un ciclo conservarían el valor del empleado anterior)
             SET @DescINFO = 0;
