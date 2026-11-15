@@ -335,10 +335,14 @@ WHERE TipoConcepto IN ('P','D')
   AND EsBase = 0
   AND FormaCalculo IS NULL;
 
--- Día de descanso laborado (LFT Art. 73 / SAT 054) y día festivo obligatorio laborado (LFT Art. 75 / SAT 055):
--- además del salario ordinario (ya incluido en el sueldo) se paga un salario DOBLE por el servicio prestado (factor 2x).
+-- Día de descanso laborado (SAT 054, LFT Art. 73) y día festivo obligatorio laborado (SAT 055, LFT Art. 75):
+-- además del salario ordinario del día (que ya se paga en Sueldos/001) se cubre un salario DOBLE por el servicio
+-- prestado, por lo que el trabajador recibe pago TRIPLE por ese día (criterio SCJN) -> FactorMultiplicador = 2.
+-- Tratamiento fiscal: 100% GRAVADO para ISR (no aplica exención del Art. 93 LISR); se fija de forma explícita para
+-- evitar retenciones de ISR incorrectas. Nota: las claves SAT 054 y 055 sólo son vigentes para timbrado desde el
+-- 2026-01-01; no deben usarse en nóminas con fecha de pago anterior a esa fecha.
 UPDATE dbo.CatConcepto
-SET FactorMultiplicador = 2
+SET FactorMultiplicador = 2, EsGravado = 1
 WHERE TipoConcepto = 'P' AND ClaveSAT IN ('054','055');
 GO
 
