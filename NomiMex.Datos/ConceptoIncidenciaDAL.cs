@@ -99,7 +99,7 @@ namespace NomiMex.Datos
             DataTable t = AccesoDatos.Consultar(
                 "SELECT i.IdIncidencia, i.IdPeriodo, i.IdEmpleado, i.IdConceptoSAT, i.CantidadOValor, i.ImporteCalculado, i.EsPermanente, i.Observaciones, " +
                 ColumnasConcepto + " FROM dbo.ProcIncidencias i JOIN dbo.CatConcepto c ON c.ConceptoId = i.IdConceptoSAT AND c.TipoConcepto <> 'I' " +
-                "WHERE i.IdPeriodo = @Periodo AND NOT EXISTS (SELECT 1 FROM dbo.RelConceptoFormula rf WHERE rf.ConceptoId = c.ConceptoId AND rf.Activa = 1) ORDER BY i.IdIncidencia",
+                "WHERE i.IdPeriodo = @Periodo AND NOT (c.TipoConcepto = 'P' AND c.ClaveSAT IN ('019','020','002','021','022','025')) ORDER BY i.IdIncidencia",
                 AccesoDatos.Parametro("@Periodo", periodoId));
             var lista = new List<ProcIncidenciaConcepto>();
             foreach (DataRow f in t.Rows)

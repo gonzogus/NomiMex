@@ -3415,15 +3415,17 @@ BEGIN
             SET @ExAntiguedad = CASE WHEN @ImpSepar > 0 THEN ROUND(@ExSepar * @ImpAntiguedad / @ImpSepar, 4) ELSE 0 END;
             SET @ExIndemniz   = @ExSepar - @ExAntiguedad;
 
-            -- Conceptos capturados como incidencia por monto (bonos, descuentos, etc.). Se excluyen los conceptos
-            -- manejados por el motor de fórmulas (019, 020), ya sumados arriba, para no contarlos dos veces.
+            -- Conceptos capturados como incidencia por monto (días de descanso laborados, festivos, bonos, descuentos, etc.).
+            -- Solo se excluyen los 6 conceptos que recalcula el motor de fórmulas con rama dedicada (019, 020, 002, 021,
+            -- 022, 025 en percepciones), ya sumados arriba, para no contarlos dos veces. Los demás conceptos con fórmula
+            -- (p. ej. 054 días de descanso laborados) se integran aquí con el importe capturado.
             SELECT @ConceptosGravados = ISNULL(SUM(CASE WHEN c.TipoConcepto = 'P' AND c.EsGravado = 1 THEN i.ImporteCalculado ELSE 0 END),0),
                    @ConceptosExentos = ISNULL(SUM(CASE WHEN c.TipoConcepto = 'P' AND c.EsGravado = 0 THEN i.ImporteCalculado ELSE 0 END),0),
                    @ConceptosDeduccion = ISNULL(SUM(CASE WHEN c.TipoConcepto = 'D' THEN i.ImporteCalculado ELSE 0 END),0)
             FROM dbo.ProcIncidencias i
             JOIN dbo.CatConcepto c ON c.ConceptoId = i.IdConceptoSAT AND c.TipoConcepto <> 'I'
             WHERE i.IdPeriodo = @PeriodoId AND i.IdEmpleado = @EmpleadoId AND i.Estatus = 'ACTIVA'
-              AND NOT EXISTS (SELECT 1 FROM dbo.RelConceptoFormula rf WHERE rf.ConceptoId = c.ConceptoId AND rf.Activa = 1);
+              AND NOT (c.TipoConcepto = 'P' AND c.ClaveSAT IN ('019','020','002','021','022','025'));
 
             SET @TotalGravado = @SalarioBase + @GrHE + (@ImpFest - @ExFest) + (@ImpPD - @ExPD) + (@ImpAgui - @ExAgui) + (@ImpPrimaVac - @ExPrimaVac) + (@ImpAntiguedad - @ExAntiguedad) + (@ImpIndemniz - @ExIndemniz) + @Bonos + @ConceptosGravados;
             SET @TotalExento  = @ExHE + @ExFest + @ExPD + @ExAgui + @ExPrimaVac + @ExAntiguedad + @ExIndemniz + @ConceptosExentos;
@@ -3585,7 +3587,7 @@ BEGIN
             FROM dbo.ProcIncidencias i
             JOIN dbo.CatConcepto c ON c.ConceptoId = i.IdConceptoSAT AND c.TipoConcepto <> 'I'
             WHERE i.IdPeriodo = @PeriodoId AND i.IdEmpleado = @EmpleadoId AND i.Estatus = 'ACTIVA'
-              AND NOT EXISTS (SELECT 1 FROM dbo.RelConceptoFormula rf WHERE rf.ConceptoId = c.ConceptoId AND rf.Activa = 1);
+              AND NOT (c.TipoConcepto = 'P' AND c.ClaveSAT IN ('019','020','002','021','022','025'));
 
             INSERT dbo.DocReciboOtroPago(DetalleId,SubsidioCausado)
             SELECT DetalleId,ROUND(@SubMes / @FactorMes,2)
