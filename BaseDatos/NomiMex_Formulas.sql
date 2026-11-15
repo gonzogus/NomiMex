@@ -63,7 +63,7 @@ GO
 
 -- 4. Marcar los conceptos como incidencia capturable con su forma de cálculo
 UPDATE dbo.CatConcepto SET EsIncidencia = 1, FormaCalculo = 'DIAS'  WHERE ClaveSAT = '020' AND TipoConcepto = 'P';
-UPDATE dbo.CatConcepto SET EsIncidencia = 1, FormaCalculo = 'HORAS' WHERE ClaveSAT = '019' AND TipoConcepto = 'P';
+UPDATE dbo.CatConcepto SET EsIncidencia = 1, FormaCalculo = 'HORAS', FactorMultiplicador = 2 WHERE ClaveSAT = '019' AND TipoConcepto = 'P'; -- horas extra dobles: el diálogo de captura muestra el pago al doble (LFT Art. 67)
 UPDATE dbo.CatConcepto SET EsIncidencia = 1, FormaCalculo = 'DIAS'  WHERE TipoConcepto = 'P' AND ClaveSAT IN ('002','021','022','025');
 GO
 
