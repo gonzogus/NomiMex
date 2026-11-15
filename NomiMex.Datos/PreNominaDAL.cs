@@ -88,8 +88,8 @@ namespace NomiMex.Datos
             }
 
             DataTable valores = AccesoDatos.Consultar(
-                "SELECT dbo.fn_ObtenerUMADiaria(@Anio) AS UMA, dbo.fn_ObtenerSMGDiario(@Anio, 'GENERAL') AS SMG",
-                AccesoDatos.Parametro("@Anio", anio));
+                "SELECT dbo.fn_ObtenerUMADiariaFecha(@FechaFin) AS UMA, dbo.fn_ObtenerSMGDiarioFecha(@FechaFin, 'GENERAL') AS SMG",
+                AccesoDatos.Parametro("@FechaFin", fechaFin));
             p.UMADiaria = Fila.Obtener<decimal>(valores.Rows[0], "UMA");
             p.SalarioMinimoGeneral = Fila.Obtener<decimal>(valores.Rows[0], "SMG");
 

@@ -3289,7 +3289,9 @@ BEGIN
                                       THEN dbo.fn_ContarDiaSemana(@FechaInicio, @FechaFin, @DiaDescanso) ELSE 0 END;
         DECLARE @DiasLaborables DECIMAL(10,4) = CASE WHEN @DiasPeriodo - @Descansos > 0 THEN @DiasPeriodo - @Descansos ELSE 0 END;
         DECLARE @FestivosPeriodo INT = (SELECT COUNT(1) FROM dbo.RelPeriodoDiaFestivo WHERE PeriodoId = @PeriodoId);
-        DECLARE @UMADia DECIMAL(12,4) = dbo.fn_ObtenerUMADiariaFecha(@FechaPago);
+        -- UMA y SMG se resuelven por la FECHA FIN del periodo (vigencia), no por GETDATE() ni por año: una nómina de
+        -- diciembre timbrada en enero, o un periodo de enero (la UMA cambia el 1-feb), aplica la tarifa exacta del periodo.
+        DECLARE @UMADia DECIMAL(12,4) = dbo.fn_ObtenerUMADiariaFecha(@FechaFin);
         IF @UMADia IS NULL OR @UMADia <= 0 THROW 51010, 'Falta UMA vigente.', 1;
         IF NOT EXISTS (SELECT 1 FROM dbo.CatCuotaIMSS WHERE EjercicioId = @EjercicioId)
             THROW 51010, 'Faltan cuotas IMSS del ejercicio.', 1;
@@ -3457,7 +3459,7 @@ BEGIN
                 SET @DescINFO = CASE @TipoDesc
                     WHEN 'CUOTA_FIJA' THEN @MontoDesc
                     WHEN 'PORCENTAJE' THEN @SBC * @DiasTrab * @MontoDesc / 100.0
-                    WHEN 'VSM'        THEN @MontoDesc * dbo.fn_ObtenerSMGDiario(@Anio,'GENERAL') * @DiasTrab
+                    WHEN 'VSM'        THEN @MontoDesc * dbo.fn_ObtenerSMGDiarioFecha(@FechaFin,'GENERAL') * @DiasTrab
                     ELSE 0 END;
 
             -- Descuento Préstamo Interno (calculado sin mutar el saldo definitivo hasta el cierre)

@@ -129,7 +129,7 @@ namespace NomiMex.Datos
                 "  ISNULL((SELECT DiasAguinaldo FROM dbo.CatPoliticaEmpresarial WHERE PoliticaId = @Pol), 15) AS DiasAguinaldo, " +
                 "  ISNULL((SELECT PorcentajePrimaVacacional FROM dbo.CatPoliticaEmpresarial WHERE PoliticaId = @Pol), 25) AS PrimaVac, " +
                 "  CAST(dbo.fn_DiasVacaciones(@Anios) AS DECIMAL(10,4)) AS DiasVacaciones, " +
-                "  dbo.fn_ObtenerUMADiaria(YEAR(GETDATE())) AS UMA",
+                "  dbo.fn_ObtenerUMADiariaFecha(CAST(GETDATE() AS DATE)) AS UMA",
                 AccesoDatos.Parametro("@EmpresaId", empresaId),
                 AccesoDatos.Parametro("@Anios", aniosServicio));
 
