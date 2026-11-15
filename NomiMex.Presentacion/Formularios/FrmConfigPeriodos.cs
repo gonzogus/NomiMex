@@ -357,7 +357,7 @@ namespace NomiMex.Presentacion.Formularios
 
         private DiaFestivoListado FestivoSeleccionado()
         {
-            return dgvFestivos.CurrentRow == null ? null : dgvFestivos.CurrentRow.DataBoundItem as DiaFestivoListado;
+            return dgvFestivos.SelectedRows.Count == 0 ? null : dgvFestivos.SelectedRows[0].DataBoundItem as DiaFestivoListado;
         }
 
         private void nudAnioFestivo_ValueChanged(object sender, EventArgs e)

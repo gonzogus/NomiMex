@@ -16,10 +16,6 @@ namespace NomiMex.Presentacion.Formularios
         private void FrmLogin_Shown(object sender, EventArgs e)
         {
             txtUsuario.Focus();
-
-            // Prellenar los campos de usuario y contraseña para facilitar el inicio de sesión durante las pruebas
-            txtUsuario.Text = "admin";
-            txtContrasena.Text = "Paola3002.";
         }
 
         private void chkMostrarContrasena_CheckedChanged(object sender, EventArgs e)
