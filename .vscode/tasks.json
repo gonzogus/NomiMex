@@ -1,0 +1,76 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compilar NomiMex",
+            "detail": "Compila toda la solución en configuración Debug.",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/NomiMex.sln",
+                "-c",
+                "Debug",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$mscompile",
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            }
+        },
+        {
+            "label": "Ejecutar NomiMex",
+            "detail": "Compila y abre la aplicación de escritorio.",
+            "command": "${workspaceFolder}/NomiMex.Presentacion/bin/Debug/net481/NomiMex.exe",
+            "type": "process",
+            "dependsOn": "Compilar NomiMex",
+            "group": "none",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "Limpiar NomiMex",
+            "detail": "Elimina los binarios de la configuración Debug.",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "${workspaceFolder}/NomiMex.sln",
+                "-c",
+                "Debug"
+            ],
+            "problemMatcher": "$mscompile",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Pruebas de integración",
+            "detail": "Recrea una base aislada y ejecuta las pruebas del módulo de incidencias.",
+            "command": "pwsh",
+            "type": "process",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/Tests/NomiMex.Incidencias.Tests/Ejecutar.ps1"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        }
+    ]
+}

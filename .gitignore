@@ -1,0 +1,32 @@
+# Compilación .NET
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio / VS Code
+.vs/
+*.user
+*.suo
+*.userprefs
+*.cache
+
+# NuGet
+packages/
+*.nupkg
+
+# Resultados y temporales
+[Tt]est[Rr]esult*/
+*.log
+*.tmp
+Thumbs.db
+
+# Documentos sueltos y catálogos de referencia (no forman parte del código)
+*.pdf
+*.xls
+*.xlsx

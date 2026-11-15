@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net481</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>NomiMex.Datos</RootNamespace>
+    <AssemblyName>NomiMex.Datos</AssemblyName>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NomiMex.Entidades\NomiMex.Entidades.csproj" />
+  </ItemGroup>
+
+</Project>

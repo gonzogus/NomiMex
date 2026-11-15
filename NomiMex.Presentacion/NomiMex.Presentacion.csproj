@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net481</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>NomiMex.Presentacion</RootNamespace>
+    <AssemblyName>NomiMex</AssemblyName>
+    <ApplicationIcon>NomiMex.ico</ApplicationIcon>
+    <Deterministic>true</Deterministic>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <!-- Necesario para recursos binarios (imágenes del logo) embebidos en los .resx del diseñador -->
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    <!-- Impide que la UI compile contra NomiMex.Datos aunque Negocio lo referencie -->
+    <DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NomiMex.Negocio\NomiMex.Negocio.csproj" />
+    <ProjectReference Include="..\NomiMex.Entidades\NomiMex.Entidades.csproj" />
+  </ItemGroup>
+
+</Project>

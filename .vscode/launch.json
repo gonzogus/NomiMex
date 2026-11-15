@@ -1,0 +1,23 @@
+{
+    // Configuraciones para compilar y ejecutar NomiMex (WinForms, .NET Framework 4.8.1).
+    // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Ejecutar NomiMex (escritorio)",
+            "type": "clr",
+            "request": "launch",
+            "preLaunchTask": "Compilar NomiMex",
+            "program": "${workspaceFolder}/NomiMex.Presentacion/bin/Debug/net481/NomiMex.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/NomiMex.Presentacion/bin/Debug/net481",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Adjuntar a proceso",
+            "type": "clr",
+            "request": "attach"
+        }
+    ]
+}
