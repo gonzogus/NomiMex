@@ -1,4 +1,4 @@
--- ==============================================================================
+﻿-- ==============================================================================
 -- NomiMex - Datos REALES de la empresa (constancia de situación fiscal y recibos de nómina)
 -- Ejecutar con sqlcmd -d <base> en una base creada por NomiMex_Instalacion.sql,
 -- después de los datos iniciales.

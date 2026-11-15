@@ -1,4 +1,4 @@
--- ==============================================================================
+﻿-- ==============================================================================
 -- NomiMex - Script Maestro de Instalación Integral
 -- Destino: instancia indicada al ejecutar sqlcmd | base indicada en BaseDatos
 -- Taxonomía SAT: Cat, Proc, Doc, Rel, Log, Hist

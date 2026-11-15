@@ -1,4 +1,4 @@
--- ==============================================================================
+﻿-- ==============================================================================
 -- NomiMex - Datos iniciales para operar la aplicación de escritorio
 -- Ejecutar con sqlcmd -d <base> en una base creada por NomiMex_Instalacion.sql.
 -- Es idempotente.
