@@ -3329,6 +3329,12 @@ BEGIN
             INNER JOIN dbo.CatConcepto c ON c.ConceptoId = i.IdConceptoSAT
             WHERE i.IdEmpleado = @EmpleadoId AND i.IdPeriodo = @PeriodoId AND i.Estatus = 'ACTIVA';
 
+            -- Reparto legal de horas extra (LFT Art. 66-68): las primeras 9 h por semana (prorrateadas a los días del
+            -- periodo) se pagan al DOBLE; el excedente se paga al TRIPLE y es 100% gravado.
+            DECLARE @LimiteHEDoble DECIMAL(10,2) = @LimHE * (@DiasPeriodo / 7.0);
+            SET @HET = CASE WHEN @HED > @LimiteHEDoble THEN @HED - @LimiteHEDoble ELSE 0 END;
+            SET @HED = CASE WHEN @HED > @LimiteHEDoble THEN @LimiteHEDoble ELSE @HED END;
+
             -- Sueldo por días laborados + proporcional del séptimo día (se pierde en la misma proporción que las faltas).
             -- Con un contrato de menos de 7 días por semana solo se pagan los días contratados del periodo (tope: los laborables).
             SET @DiasSemana = dbo.fn_ObtenerDiasSemanaEmpleado(@EmpleadoId, @PeriodoId);
@@ -3358,7 +3364,7 @@ BEGIN
             ELSE IF @HED > 0
                 SET @ImpHED = @HED * @SalarioHora * @FactHED;
             SET @ImpHET = CASE WHEN @HET = 0 THEN 0 ELSE @HET * @SalarioHora * @FactHET END;
-            SET @ExHE   = CASE WHEN @HED <= @LimHE
+            SET @ExHE   = CASE WHEN @HED <= @LimiteHEDoble
                                THEN CASE WHEN @ImpHED * 0.5 > @TopeExSemanal THEN @TopeExSemanal ELSE @ImpHED * 0.5 END
                                ELSE 0 END;
             SET @GrHE   = (@ImpHED + @ImpHET) - @ExHE;
@@ -3525,9 +3531,13 @@ BEGIN
                 INSERT INTO dbo.DocReciboDetalle (ReciboId, TipoConcepto, ClaveConceptoSAT, Descripcion, ImporteGravado, ImporteExento)
                 VALUES (@ReciboId, 'P', '001', 'Séptimo día (proporcional)', @PagoSeptimo, 0);
 
-            IF (@ImpHED + @ImpHET) > 0
+            IF @ImpHED > 0
                 INSERT INTO dbo.DocReciboDetalle (ReciboId, TipoConcepto, ClaveConceptoSAT, Descripcion, ImporteGravado, ImporteExento)
-                VALUES (@ReciboId, 'P', '019', 'Horas Extra', @GrHE, @ExHE);
+                VALUES (@ReciboId, 'P', '019', 'Horas Extra Dobles', @ImpHED - @ExHE, @ExHE);
+
+            IF @ImpHET > 0
+                INSERT INTO dbo.DocReciboDetalle (ReciboId, TipoConcepto, ClaveConceptoSAT, Descripcion, ImporteGravado, ImporteExento)
+                VALUES (@ReciboId, 'P', '019', 'Horas Extra Triples', @ImpHET, 0);
 
             IF @ImpPD > 0
                 INSERT INTO dbo.DocReciboDetalle (ReciboId, TipoConcepto, ClaveConceptoSAT, Descripcion, ImporteGravado, ImporteExento)

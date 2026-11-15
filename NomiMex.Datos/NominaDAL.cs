@@ -100,10 +100,29 @@ namespace NomiMex.Datos
                     Descuentos = Fila.Obtener<decimal>(fila, "Descuentos")
                 };
             }
+
+            // Reparto legal de horas extra (LFT Art. 66-68): las primeras 9 h/semana (prorrateadas al periodo) van al
+            // doble; el excedente al triple. Todos los trabajadores del periodo comparten la empresa y su política.
+            if (resultado.Count > 0)
+            {
+                DataTable pt = AccesoDatos.Consultar(
+                    "SELECT DATEDIFF(DAY, p.FechaInicio, p.FechaFin) + 1 AS Dias, " +
+                    "ISNULL((SELECT LimiteHorasExtraSinGravar FROM dbo.CatPoliticaEmpresarial WHERE PoliticaId = dbo.fn_ObtenerPoliticaActiva(p.EmpresaId, p.FechaFin)), 9) AS Limite " +
+                    "FROM dbo.ProcPeriodoNomina p WHERE p.PeriodoId = @Id",
+                    AccesoDatos.Parametro("@Id", periodoId));
+                if (pt.Rows.Count == 1)
+                {
+                    decimal limiteHEDoble = Math.Round(Fila.Obtener<decimal>(pt.Rows[0], "Limite") * (Fila.Obtener<int>(pt.Rows[0], "Dias") / 7m), 2, MidpointRounding.AwayFromZero);
+                    foreach (IncidenciasEmpleado inc in resultado.Values)
+                    {
+                        decimal total = inc.HorasExtraDobles;
+                        inc.HorasExtraTriples = total > limiteHEDoble ? total - limiteHEDoble : 0m;
+                        inc.HorasExtraDobles = total > limiteHEDoble ? limiteHEDoble : total;
+                    }
+                }
+            }
             return resultado;
         }
-
-        /// <summary>Días laborados por semana vigentes (ajuste del periodo o contrato) de los trabajadores con recibo en el periodo; omite a los de jornada completa.</summary>
         public Dictionary<int, int> ObtenerDiasSemanaPorEmpleado(int periodoId)
         {
             DataTable t = AccesoDatos.Consultar(

@@ -70,7 +70,7 @@ namespace NomiMex.Negocio
             decimal importeDobles = Dec(horasDobles * salarioHora * factorHED, 4);
             decimal importeTriples = Dec(horasTriples * salarioHora * par.FactorHoraExtraTriple, 4);
             decimal topeExentoSemanal = Dec(uma * par.ExencionHorasExtraUMAsSemanal * (periodo.DiasPeriodo / 7m), 4);
-            decimal exentoHorasExtra = horasDobles <= par.LimiteHorasExtraSinGravar
+            decimal exentoHorasExtra = horasDobles <= Dec(par.LimiteHorasExtraSinGravar * (periodo.DiasPeriodo / 7m), 2)
                 ? Math.Min(Dec(importeDobles * 0.5m, 4), topeExentoSemanal)
                 : 0m;
             decimal gravadoHorasExtra = Dec(importeDobles + importeTriples - exentoHorasExtra, 4);
@@ -157,8 +157,10 @@ namespace NomiMex.Negocio
 
             AgregarConcepto(pre.Percepciones, "P", "001", "Sueldos, Salarios Rayas y Jornales", diasLaborablesPagados, sueldoDias, 0m, true);
             AgregarConcepto(pre.Percepciones, "P", "001", "Séptimo día (proporcional)", diasSeptimo, pagoSeptimo, 0m, pagoSeptimo > 0m);
-            AgregarConcepto(pre.Percepciones, "P", "019", "Horas Extra", horasDobles + horasTriples, gravadoHorasExtra, exentoHorasExtra,
-                importeDobles + importeTriples > 0m, CodigoIncidencia.HoraExtraDoble, CodigoIncidencia.HoraExtraTriple);
+            AgregarConcepto(pre.Percepciones, "P", "019", "Horas Extra Dobles", horasDobles, importeDobles - exentoHorasExtra, exentoHorasExtra,
+                importeDobles > 0m, CodigoIncidencia.HoraExtraDoble);
+            AgregarConcepto(pre.Percepciones, "P", "019", "Horas Extra Triples", horasTriples, importeTriples, 0m,
+                importeTriples > 0m, CodigoIncidencia.HoraExtraTriple);
             AgregarConcepto(pre.Percepciones, "P", "020", "Prima Dominical", diasPrimaDominical, importePrima - exentoPrima, exentoPrima,
                 importePrima > 0m, CodigoIncidencia.PrimaDominical);
             AgregarConcepto(pre.Percepciones, "P", "002", "Gratificación Anual (Aguinaldo)", diasAguinaldo, importeAguinaldo - exentoAguinaldo, exentoAguinaldo,

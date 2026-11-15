@@ -91,6 +91,20 @@ internal static partial class Program
             Verificar(con8 == 262.5m, "Con 8 h: 37.50 x (2x2 + 1x3) = 262.50, se obtuvo " + con8);
             Verificar(con10 == 210m, "Con turno de 10 h: 30 x (2x2 + 1x3) = 210, se obtuvo " + con10);
         });
+        Caso("Horas extra: el pre-recibo desglosa dobles y triples; el triple es 100% gravado", () =>
+        {
+            var periodo = new PeriodoResumen { DiasPeriodo = 7, FechaInicio = new DateTime(2026, 11, 2), FechaFin = new DateTime(2026, 11, 8) };
+            var par = new ParametrosCalculoNomina { UMADiaria = 100, SalarioMinimoGeneral = 100, FactorHoraExtraDoble = 2m, FactorHoraExtraTriple = 3m, LimiteHorasExtraSinGravar = 9m };
+            par.TablaISR.Add(new TramoISR { LimiteInferior = 0, LimiteSuperior = 999999, TasaExcedente = 0.1m });
+            var emp = new DatosEmpleadoCalculo { SalarioDiario = 400, SBC = 420 }; // salario por hora = 400/8 = 50
+            // Ya repartidas por el DAL: 9 h dobles (dentro del límite semanal) + 3 h triples (excedente)
+            var pre = CalculadoraPreRecibo.Calcular(periodo, par, emp, new IncidenciasEmpleado { HorasExtraDobles = 9m, HorasExtraTriples = 3m });
+            var dobles = pre.Percepciones.FirstOrDefault(p => p.Descripcion == "Horas Extra Dobles");
+            var triples = pre.Percepciones.FirstOrDefault(p => p.Descripcion == "Horas Extra Triples");
+            Verificar(dobles != null && triples != null, "Debe haber una línea de dobles y otra de triples.");
+            Verificar(dobles.ImporteGravado + dobles.ImporteExento == 900m, "9 h x 50 x 2 = 900, se obtuvo " + (dobles.ImporteGravado + dobles.ImporteExento));
+            Verificar(triples.ImporteGravado == 450m && triples.ImporteExento == 0m, "3 h x 50 x 3 = 450, 100% gravado, se obtuvo " + triples.ImporteGravado);
+        });
         Caso("Dias laborados por semana del contrato limitan el sueldo y el septimo dia proporcional", () =>
         {
             var semana = new PeriodoResumen { DiasPeriodo = 7, FechaInicio = new DateTime(2026, 11, 2), FechaFin = new DateTime(2026, 11, 8), DiaDescanso = 7, CalculaSeptimoDia = true };
