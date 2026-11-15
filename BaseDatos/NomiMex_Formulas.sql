@@ -334,6 +334,12 @@ SET EsIncidencia = 1, FormaCalculo = 'MONTO_FIJO', ClaveUnidadSAT = N'ACT'
 WHERE TipoConcepto IN ('P','D')
   AND EsBase = 0
   AND FormaCalculo IS NULL;
+
+-- Día de descanso laborado (LFT Art. 73 / SAT 054) y día festivo obligatorio laborado (LFT Art. 75 / SAT 055):
+-- además del salario ordinario (ya incluido en el sueldo) se paga un salario DOBLE por el servicio prestado (factor 2x).
+UPDATE dbo.CatConcepto
+SET FactorMultiplicador = 2
+WHERE TipoConcepto = 'P' AND ClaveSAT IN ('054','055');
 GO
 
 -- -----------------------------------------------------------------------------
